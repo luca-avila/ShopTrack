@@ -193,13 +193,33 @@ def reports():
 
     return render_template('reports.html', sales=sales, restocks=restocks)
 
+@app.route('/edit_price', methods=['GET', 'POST'])
+def edit_price():
+    if request.method == 'GET':
+        db = get_db()
+        products = db.execute('SELECT * FROM products').fetchall()
+        return render_template('edit_price.html', products=products)
 
+    product_id = request.form.get('product_id')
+    new_price = request.form.get('new_price', type=float)
+    
+    if not product_id or new_price is None:
+        return "Product ID and new price are required", 400
+    if new_price < 0:
+        return "Price must be non-negative", 400
+
+    db = get_db()
+    db.execute('UPDATE products SET price = ? WHERE id = ?', (new_price, product_id))
+    db.commit()
+
+    return redirect('/products')
 
 # --- ADDITIONAL FUNCTIONALITY TO IMPLEMENT ---
+# - Improve input validation and error handling
+# - Add OOP structure for better organization
 # - Generate reports: sales per product, date range, etc.
-# - Input validation and error handling
-# - Use Flask's g and context for DB connections (for production apps)
 # - Flash messages for user feedback
+# - Implement user authentication for admin features
 
 if __name__ == '__main__':
     # Run the Flask development server
