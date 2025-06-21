@@ -220,6 +220,7 @@ def edit_price():
 # - Generate reports: sales per product, date range, etc.
 # - Flash messages for user feedback
 # - Implement user authentication for admin features
+# - Add javascript for dynamic UI updates 
 
 if __name__ == '__main__':
     # Run the Flask development server
