@@ -1,0 +1,46 @@
+# How to Run the Flask App
+
+## Requirements
+
+- Python 3 installed (download from https://www.python.org/)
+- Internet connection to install dependencies
+
+---
+
+## Steps to install and run the app
+
+1. Open a terminal or command prompt
+2. Navigate to the folder where this project is located
+3. (Optional, recommended) Create a virtual environment:
+
+   On Windows:
+   > python -m venv venv  
+   > venv\Scripts\activate
+
+4. Install the required packages:
+
+   > pip install -r requirements.txt
+
+5. Run the application:
+
+   > python app.py
+
+6. Open your browser and go to:
+
+   http://127.0.0.1:5000
+
+---
+
+## Important files and folders
+
+- `app.py`: the main Python file that runs the app
+- `store.db`: the SQLite database file
+- `templates/`: folder containing HTML files (like `base.html`, `index.html`)
+- `static/`: folder for static files (CSS, images, etc.)
+
+---
+
+## Notes
+
+- Make sure the file `store.db` is in the same folder as `app.py`.
+- If you see any errors, copy the message and ask for help.
