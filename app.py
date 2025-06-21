@@ -170,10 +170,23 @@ def delete_product():
 
     return redirect('/products')
 
+@app.route('/reports', methods=['GET'])
+def view_reports():
+    # Fetch sales history and send to template
+    db = get_db()
+    sales = db.execute('SELECT * FROM history WHERE type = ?', ('SELL')).fetchall()
+    restocks = db.execute('SELECT * FROM history WHERE type = ?', ('BUY')).fetchall()
+
+    if not sales and not restocks:
+        return "No sales or restock history available", 404
+
+
+    return render_template('reports.html', sales=sales, restocks=restocks)
+
+
 
 # --- ADDITIONAL FUNCTIONALITY TO IMPLEMENT ---
 # - Edit product: form to update product info (GET/POST)
-# - Delete product: remove product from DB
 # - View sales history: list/filter sales
 # - Generate reports: sales per product, date range, etc.
 # - Input validation and error handling
