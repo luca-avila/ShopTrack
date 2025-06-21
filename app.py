@@ -196,8 +196,6 @@ def reports():
 
 
 # --- ADDITIONAL FUNCTIONALITY TO IMPLEMENT ---
-# - Edit product: form to update product info (GET/POST)
-# - View sales history: list/filter sales
 # - Generate reports: sales per product, date range, etc.
 # - Input validation and error handling
 # - Use Flask's g and context for DB connections (for production apps)

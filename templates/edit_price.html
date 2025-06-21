@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Price{% endblock %}
+
+{% block content %}
+<h2>Edit Price</h2>
+<form method="post" action="/edit_price">
+    <label for="product_id">Product:</label>
+    <select name="product_id" id="product_id" required>
+        {% for product in products %}
+            <option value="{{ product.id }}">{{ product.name }} (Price: ${{ "%.2f"|format(product.price) }})</option>
+        {% endfor %}
+    </select>
+    <label for="new_price">New price:</label>
+    <input type="number" name="new_price" id="new_price" min="0" required>
+    <button type="submit">Update</button>
+</form>
+{% endblock %}
