@@ -10,7 +10,7 @@ DATABASE = 'store.db'
 def get_db():
     if 'db' not in g:
         g.db = sqlite3.connect(DATABASE)
-        g.db.row_factory = sqlite3.Row  # To access columns by name
+        g.db.row_factory = sqlite3.Row  
     return g.db
 
 @app.teardown_appcontext
@@ -56,12 +56,6 @@ def products():
     products = db.execute('SELECT * FROM products').fetchall()
     return render_template('products.html', products=products)
 
-@app.route('/sales')
-def sales():
-    # Register a new sale
-    # TODO: Show form to select product and quantity, update stock/history
-    return render_template('sales.html')
-
 @app.route('/reports')
 def reports():
     # Show sales reports/history
@@ -78,6 +72,7 @@ def sell():
         products = db.execute('SELECT * FROM products').fetchall()
         return render_template('sell.html', products=products)
     
+    # Validate and process the sale
     product_id = request.form.get('product_id')
     if not product_id:
         return "Product ID is required", 400
@@ -86,6 +81,19 @@ def sell():
     if not quantity or quantity <= 0:
         return "Invalid quantity", 400
     
+    db = get_db()
+    stock = db.execute('SELECT stock FROM products WHERE id = ?', (product_id,)).fetchone()
+    if not stock:
+        return "Product not found", 404
+    if stock['stock'] < quantity:
+        return "Insufficient stock", 400
+    
+    # Update stock and history
+    db.execute('UPDATE products SET stock = stock - ? WHERE id = ?', (quantity, product_id))
+    db.execute('INSERT INTO history (product_id, quantity) VALUES (?, ?)', (product_id, quantity))
+    db.commit()
+
+    return redirect('/products')
 
 
 # --- ADDITIONAL FUNCTIONALITY TO IMPLEMENT ---
