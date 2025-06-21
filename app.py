@@ -48,8 +48,7 @@ with sqlite3.connect(DATABASE) as connection:
 
 @app.route('/')
 def index():
-    # Home page: summary/dashboard (e.g., stats, quick links)
-    return render_template('index.html')
+    return redirect('/products')
 
 @app.route('/products', methods=['GET'])
 def products():

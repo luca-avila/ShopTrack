@@ -3,16 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.2.1/dist/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
     <title>{% block title %}ShopTrack{% endblock %}</title>
 </head>
 <body>
     <header>
-        <h1>ShopTrack</h1>
-        <nav>
-            <a href="/">Home</a>
-            <a href="/products">Products</a>
-            <a href="/reports">Reports</a>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="/">ShopTrack</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item mx-2">
+                            <a class="nav-link" href="/">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/reports">History</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </nav>
+
     </header>
 
     <main>
@@ -20,7 +34,7 @@
         {% endblock %}
     </main>
 
-    <footer>
+    <footer class="fixed-bottom bg-dark text-white text-center py-3">
         <p>&copy; 2025 ShopTrack. All rights reserved.</p>
     </footer>
 </body>
