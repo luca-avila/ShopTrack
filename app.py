@@ -34,7 +34,7 @@ cursor.execute(command2)
 
 @app.route('/')
 def index():
-    return "TODO"
+    return render_template('index.html')
 
 @app.route('/products')
 def products():
