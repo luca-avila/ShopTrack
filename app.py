@@ -68,6 +68,26 @@ def reports():
     # TODO: Query and display sales data, possibly with filters
     return render_template('reports.html')
 
+
+@app.route('/sell', methods=['POST', 'GET'])
+def sell():
+    # Handle sale submission
+    if request.method == 'GET':
+        # Render form to select product and quantity
+        db = get_db()
+        products = db.execute('SELECT * FROM products').fetchall()
+        return render_template('sell.html', products=products)
+    
+    product_id = request.form.get('product_id')
+    if not product_id:
+        return "Product ID is required", 400
+    
+    quantity = request.form.get('quantity', type=int)
+    if not quantity or quantity <= 0:
+        return "Invalid quantity", 400
+    
+
+
 # --- ADDITIONAL FUNCTIONALITY TO IMPLEMENT ---
 # - Add product: form to add new products (POST)
 # - Edit product: form to update product info (GET/POST)

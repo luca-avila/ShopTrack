@@ -4,7 +4,7 @@
 
 {% block content %}
 <h2>Sell Product</h2>
-<form method="post">
+<form method="post" action="/sell">
     <label for="product_id">Product:</label>
     <select name="product_id" id="product_id" required>
         {% for product in products %}
