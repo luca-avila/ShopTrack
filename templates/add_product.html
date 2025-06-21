@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Add Product{% endblock %}
+
+{% block content %}
+<h2>Add New Product</h2>
+<form method="post" action="/add_product">
+    <label for="name">Product Name:</label>
+    <input type="text" name="name" id="name" required>
+    <br>
+    <label for="description">Description:</label>
+    <input type="text" name="description" id="description">
+    <br>
+    <label for="price">Price:</label>
+    <input type="number" name="price" id="price" min="0" step="0.01" required>
+    <br>
+    <label for="stock">Initial Stock:</label>
+    <input type="number" name="stock" id="stock" min="0" required>
+    <br>
+    <button type="submit">Add Product</button>
+</form>
+{% endblock %}

@@ -37,6 +37,7 @@ with sqlite3.connect(DATABASE) as connection:
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         product_id INTEGER NOT NULL,
         quantity INTEGER NOT NULL,
+        type TEXT NOT NULL CHECK(type IN('BUY', 'SELL')),
         sale_date DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (product_id) REFERENCES products(id)
     )'''
@@ -90,7 +91,7 @@ def sell():
     
     # Update stock and history
     db.execute('UPDATE products SET stock = stock - ? WHERE id = ?', (quantity, product_id))
-    db.execute('INSERT INTO history (product_id, quantity) VALUES (?, ?)', (product_id, quantity))
+    db.execute('INSERT INTO history (product_id, quantity, type) VALUES (?, ?, ?)', (product_id, quantity, 'SELL'))
     db.commit()
 
     return redirect('/products')
@@ -115,16 +116,45 @@ def restock():
     
     db = get_db()
     db.execute('UPDATE products SET stock = stock + ? WHERE id = ?', (quantity, product_id))
+    db.execute('INSERT INTO history (product_id, quantity, type) VALUES (?, ?, ?)', (product_id, quantity, 'BUY'))
     db.commit()
 
     return redirect('/products')
 
+@app.route('/add_product', methods=['POST', 'GET'])
+def add_product():
+    if request.method == 'GET':
+        return render_template("add_product.html")
+    name = request.form.get('name')
+    description = request.form.get('description', '')
+    price = request.form.get('price', type=float)
+    stock = request.form.get('stock', type=int)
+    if not name or price is None or stock is None:
+        return "All fields are required", 400
+    if price < 0 or stock < 0:
+        return "Price and stock must be non-negative", 400
+    db = get_db()
+    db.execute(
+        'INSERT INTO products (name, description, price, stock) VALUES (?, ?, ?, ?)',
+        (name, description, price, stock)
+    )
+    db.commit()
+    new_product = db.execute('SELECT id FROM products WHERE name = ?', (name,)).fetchone()
+    if not new_product:
+        return "Product not found", 404
+    product_id = new_product['id']
+    if stock > 0:
+        db.execute(
+            'INSERT INTO history (product_id, quantity, type) VALUES (?, ?, ?)',
+            (product_id, stock, 'BUY')
+        )
+        db.commit()
+    return redirect('/products')
+
 
 # --- ADDITIONAL FUNCTIONALITY TO IMPLEMENT ---
-# - Add product: form to add new products (POST)
 # - Edit product: form to update product info (GET/POST)
 # - Delete product: remove product from DB
-# - Register sale: decrease stock, add entry to history
 # - View sales history: list/filter sales
 # - Generate reports: sales per product, date range, etc.
 # - Input validation and error handling
