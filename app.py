@@ -38,6 +38,7 @@ with sqlite3.connect(DATABASE) as connection:
         product_id INTEGER NOT NULL,
         quantity INTEGER NOT NULL,
         type TEXT NOT NULL CHECK(type IN('BUY', 'SELL')),
+        price REAL NOT NULL,
         sale_date DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (product_id) REFERENCES products(id)
     )'''
@@ -57,18 +58,9 @@ def products():
     products = db.execute('SELECT * FROM products').fetchall()
     return render_template('products.html', products=products)
 
-@app.route('/reports')
-def reports():
-    # Show sales reports/history
-    # TODO: Query and display sales data, possibly with filters
-    return render_template('reports.html')
-
-
 @app.route('/sell', methods=['POST', 'GET'])
 def sell():
-    # Handle sale submission
     if request.method == 'GET':
-        # Render form to select product and quantity
         db = get_db()
         products = db.execute('SELECT * FROM products').fetchall()
         return render_template('sell.html', products=products)
@@ -83,29 +75,31 @@ def sell():
         return "Invalid quantity", 400
     
     db = get_db()
-    stock = db.execute('SELECT stock FROM products WHERE id = ?', (product_id,)).fetchone()
+    stock = db.execute('SELECT stock, price FROM products WHERE id = ?', (product_id,)).fetchone()
     if not stock:
         return "Product not found", 404
     if stock['stock'] < quantity:
         return "Insufficient stock", 400
+
+    current_price = stock['price']
     
     # Update stock and history
     db.execute('UPDATE products SET stock = stock - ? WHERE id = ?', (quantity, product_id))
-    db.execute('INSERT INTO history (product_id, quantity, type) VALUES (?, ?, ?)', (product_id, quantity, 'SELL'))
+    db.execute(
+        'INSERT INTO history (product_id, quantity, type, price) VALUES (?, ?, ?, ?)',
+        (product_id, quantity, 'SELL', current_price)
+    )
     db.commit()
 
     return redirect('/products')
 
 @app.route('/restock', methods=['POST', 'GET'])
 def restock():
-    # Handle restock submission
     if request.method == 'GET':
-        # Render form to select product and quantity
         db = get_db()
         products = db.execute('SELECT * FROM products').fetchall()
         return render_template('restock.html', products=products)
     
-    # Validate and process the restock
     product_id = request.form.get('product_id')
     if not product_id:
         return "Product ID is required", 400
@@ -115,8 +109,16 @@ def restock():
         return "Invalid quantity", 400
     
     db = get_db()
+    product = db.execute('SELECT price FROM products WHERE id = ?', (product_id,)).fetchone()
+    if not product:
+        return "Product not found", 404
+    current_price = product['price']
+
     db.execute('UPDATE products SET stock = stock + ? WHERE id = ?', (quantity, product_id))
-    db.execute('INSERT INTO history (product_id, quantity, type) VALUES (?, ?, ?)', (product_id, quantity, 'BUY'))
+    db.execute(
+        'INSERT INTO history (product_id, quantity, type, price) VALUES (?, ?, ?, ?)',
+        (product_id, quantity, 'BUY', current_price)
+    )
     db.commit()
 
     return redirect('/products')
@@ -145,8 +147,8 @@ def add_product():
     product_id = new_product['id']
     if stock > 0:
         db.execute(
-            'INSERT INTO history (product_id, quantity, type) VALUES (?, ?, ?)',
-            (product_id, stock, 'BUY')
+            'INSERT INTO history (product_id, quantity, type, price) VALUES (?, ?, ?, ?)',
+            (product_id, stock, 'BUY', price)
         )
         db.commit()
     return redirect('/products')
@@ -171,17 +173,19 @@ def delete_product():
     return redirect('/products')
 
 @app.route('/reports', methods=['GET'])
-def view_reports():
-    # Fetch sales history and send to template
+def reports():
     db = get_db()
-    sales = db.execute('SELECT * FROM history WHERE type = ?', ('SELL')).fetchall()
-    restocks = db.execute('SELECT * FROM history WHERE type = ?', ('BUY')).fetchall()
+    sales = db.execute('''
+        SELECT products.name, products.price, history.quantity, history.sale_date, history.type
+        FROM history
+        JOIN products ON history.product_id = products.id
+        WHERE history.type = ?
+    ''', ('SELL',)).fetchall()
 
-    if not sales and not restocks:
+    if not sales:
         return "No sales or restock history available", 404
 
-
-    return render_template('reports.html', sales=sales, restocks=restocks)
+    return render_template('reports.html', sales=sales)
 
 
 

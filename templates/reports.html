@@ -5,51 +5,52 @@
 {% endblock %}
 
 {% block content %}
-    <h2>Sales Report</h2>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Product</th>
-                <th>Quantity Sold</th>
-                <th>Total Revenue</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for sale in sales %}
-                <tr>
-                    <td>{{ sale.date }}</td>
-                    <td>{{ sale.product.name }}</td>
-                    <td>{{ sale.quantity }}</td>
-                    <td>${{ sale.total_revenue }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<h2>Sales Report</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Product</th>
+            <th>Quantity Sold</th>
+            <th>Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for sale in sales %}
+        <tr>
+            <td>{{ sale.sale_date }}</td>
+            <td>{{ sale.name }}</td>
+            <td>{{ sale.quantity }}</td>
+            <td>{{ sale.price }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
-    <h2>Restock Report</h2>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Product</th>
-                <th>Quantity Added</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for restock in restocks %}
-                <tr>
-                    <td>{{ restock.date }}</td>
-                    <td>{{ restock.product.name }}</td>
-                    <td>{{ restock.quantity }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<!--- <h2>Restock Report</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Product</th>
+            <th>Quantity Added</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for restock in restocks %}
+        <tr>
+            <td>{{ restock.sale_date }}</td>
+            <td>{{ restock.product_name }}</td>
+            <td>{{ restock.quantity }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
-    <div class="mt-3">
-        <form method="get" action="/products">
-            <button type="submit">Back to Products</button>
-        </form>
-    </div>
+<div class="mt-3">
+    <form method="get" action="/products">
+        <button type="submit">Back to Products</button>
+    </form>
+</div>
+--->
 {% endblock %}
