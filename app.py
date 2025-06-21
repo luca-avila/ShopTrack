@@ -1,34 +1,46 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, g
 import sqlite3
 
 app = Flask(__name__)
 
-# --- DATABASE SETUP ---
-# Connect to SQLite database (creates file if it doesn't exist)
-connection = sqlite3.connect('store.db')
-cursor = connection.cursor()
+DATABASE = 'store.db'
 
-# Create 'products' table: stores product info
-command1 = '''
-CREATE TABLE IF NOT EXISTS products (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    description TEXT,
-    price REAL NOT NULL,
-    stock INTEGER NOT NULL
-)'''
-cursor.execute(command1)
+# --- DATABASE CONNECTION HELPERS ---
 
-# Create 'history' table: stores sales history
-command2 = '''
-CREATE TABLE IF NOT EXISTS history (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    product_id INTEGER NOT NULL,
-    quantity INTEGER NOT NULL,
-    sale_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (product_id) REFERENCES products(id)
-)'''
-cursor.execute(command2)
+def get_db():
+    if 'db' not in g:
+        g.db = sqlite3.connect(DATABASE)
+        g.db.row_factory = sqlite3.Row  # To access columns by name
+    return g.db
+
+@app.teardown_appcontext
+def close_db(exception):
+    db = g.pop('db', None)
+    if db is not None:
+        db.close()
+
+# --- DATABASE SETUP (run once at startup) ---
+with sqlite3.connect(DATABASE) as connection:
+    cursor = connection.cursor()
+    command1 = '''
+    CREATE TABLE IF NOT EXISTS products (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        description TEXT,
+        price REAL NOT NULL,
+        stock INTEGER NOT NULL
+    )'''
+    cursor.execute(command1)
+
+    command2 = '''
+    CREATE TABLE IF NOT EXISTS history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        product_id INTEGER NOT NULL,
+        quantity INTEGER NOT NULL,
+        sale_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (product_id) REFERENCES products(id)
+    )'''
+    cursor.execute(command2)
 
 # --- ROUTES ---
 
@@ -40,8 +52,8 @@ def index():
 @app.route('/products', methods=['GET'])
 def products():
     # Fetch products from the database and send to template
-    cursor.execute('SELECT * FROM products')
-    products = cursor.fetchall()
+    db = get_db()
+    products = db.execute('SELECT * FROM products').fetchall()
     return render_template('products.html', products=products)
 
 @app.route('/sales')
