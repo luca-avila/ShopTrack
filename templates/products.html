@@ -24,9 +24,17 @@
         </tbody>
     </table>
     <div>
-        <button>Register sell</button>
-        <button>Add restock</button>
-        <button>Add product</button>
-        <button>Delete product</button>
+        <form method="post" action="/sell">
+            <button type="submit">Register sell</button>
+        </form>
+        <form method="post" action="/restock">
+            <button type="submit">Add restock</button>
+        </form>
+        <form method="post" action="/add_product">
+            <button type="submit">Add product</button>
+        </form>
+        <form method="post" action="/delete_product">
+            <button type="submit">Delete product</button>
+        </form>
     </div>
 {% endblock %}

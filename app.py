@@ -37,11 +37,12 @@ def index():
     # Home page: summary/dashboard (e.g., stats, quick links)
     return render_template('index.html')
 
-@app.route('/products')
+@app.route('/products', methods=['GET'])
 def products():
-    # List all products
-    # TODO: Fetch products from DB and pass to template
-    return render_template('products.html')
+    # Fetch products from the database and send to template
+    cursor.execute('SELECT * FROM products')
+    products = cursor.fetchall()
+    return render_template('products.html', products=products)
 
 @app.route('/sales')
 def sales():
