@@ -151,6 +151,16 @@ def add_product():
         db.commit()
     return redirect('/products')
 
+@app.route('/delete_product', methods=['GET', 'POST'])
+def delete_product():
+
+    # Get products and send them to the html
+    db = get_db()
+    products = db.execute('SELECT * FROM products').fetchall()
+
+    if request.method == 'GET':
+        return render_template('delete_product.html', products = products)
+
 
 # --- ADDITIONAL FUNCTIONALITY TO IMPLEMENT ---
 # - Edit product: form to update product info (GET/POST)
