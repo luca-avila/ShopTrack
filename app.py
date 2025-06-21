@@ -176,16 +176,22 @@ def delete_product():
 def reports():
     db = get_db()
     sales = db.execute('''
-        SELECT products.name, products.price, history.quantity, history.sale_date, history.type
+        SELECT products.name, history.price, history.quantity, history.sale_date
         FROM history
         JOIN products ON history.product_id = products.id
         WHERE history.type = ?
+        ORDER BY history.sale_date DESC
     ''', ('SELL',)).fetchall()
 
-    if not sales:
-        return "No sales or restock history available", 404
+    restocks = db.execute('''
+        SELECT products.name, history.price, history.quantity, history.sale_date
+        FROM history
+        JOIN products ON history.product_id = products.id
+        WHERE history.type = ?
+        ORDER BY history.sale_date DESC
+    ''', ('BUY',)).fetchall()
 
-    return render_template('reports.html', sales=sales)
+    return render_template('reports.html', sales=sales, restocks=restocks)
 
 
 

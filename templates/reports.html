@@ -12,7 +12,8 @@
             <th>Date</th>
             <th>Product</th>
             <th>Quantity Sold</th>
-            <th>Price</th>
+            <th>Price at Sale</th>
+            <th>Total</th>
         </tr>
     </thead>
     <tbody>
@@ -21,36 +22,34 @@
             <td>{{ sale.sale_date }}</td>
             <td>{{ sale.name }}</td>
             <td>{{ sale.quantity }}</td>
-            <td>{{ sale.price }}</td>
+            <td>${{ "%.2f"|format(sale.price) }}</td>
+            <td>${{ "%.2f"|format(sale.price * sale.quantity) }}</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
 
-<!--- <h2>Restock Report</h2>
+<h2>Restock Report</h2>
 <table>
     <thead>
         <tr>
             <th>Date</th>
             <th>Product</th>
             <th>Quantity Added</th>
+            <th>Price at Restock</th>
+            <th>Total</th>
         </tr>
     </thead>
     <tbody>
         {% for restock in restocks %}
         <tr>
             <td>{{ restock.sale_date }}</td>
-            <td>{{ restock.product_name }}</td>
+            <td>{{ restock.name }}</td>
             <td>{{ restock.quantity }}</td>
+            <td>${{ "%.2f"|format(restock.price) }}</td>
+            <td>${{ "%.2f"|format(restock.price * restock.quantity) }}</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-
-<div class="mt-3">
-    <form method="get" action="/products">
-        <button type="submit">Back to Products</button>
-    </form>
-</div>
---->
 {% endblock %}
