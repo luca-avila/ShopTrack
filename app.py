@@ -95,6 +95,30 @@ def sell():
 
     return redirect('/products')
 
+@app.route('/restock', methods=['POST', 'GET'])
+def restock():
+    # Handle restock submission
+    if request.method == 'GET':
+        # Render form to select product and quantity
+        db = get_db()
+        products = db.execute('SELECT * FROM products').fetchall()
+        return render_template('restock.html', products=products)
+    
+    # Validate and process the restock
+    product_id = request.form.get('product_id')
+    if not product_id:
+        return "Product ID is required", 400
+    
+    quantity = request.form.get('quantity', type=int)
+    if not quantity or quantity <= 0:
+        return "Invalid quantity", 400
+    
+    db = get_db()
+    db.execute('UPDATE products SET stock = stock + ? WHERE id = ?', (quantity, product_id))
+    db.commit()
+
+    return redirect('/products')
+
 
 # --- ADDITIONAL FUNCTIONALITY TO IMPLEMENT ---
 # - Add product: form to add new products (POST)
