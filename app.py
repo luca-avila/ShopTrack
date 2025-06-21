@@ -26,27 +26,21 @@ CREATE TABLE IF NOT EXISTS products (
 )'''
 cursor.execute(command2)
 
-# 3. Display products (list)
-# 4. Form to add/modify/delete product
-# 5. Register a sale (update stock)
-# 6. View sales history
-# 7. Generate
-
 @app.route('/')
 def index():
     return render_template('index.html')
 
 @app.route('/products')
 def products():
-    return "TODO"
+    return render_template('products.html')
 
 @app.route('/sales')
 def sales():
-    return "TODO"
+    return render_template('sales.html')
 
 @app.route('/reports')
 def reports():
-    return "TODO"
+    return render_template('reports.html')
 
 
 if __name__ == '__main__':
