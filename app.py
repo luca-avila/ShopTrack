@@ -144,6 +144,7 @@ def add_product():
     if not new_product:
         return "Product not found", 404
     product_id = new_product['id']
+    print(f"Adding to history: {product_id}, {stock}, {price}")
     if stock > 0:
         db.execute(
             'INSERT INTO history (product_id, quantity, type, price) VALUES (?, ?, ?, ?)',
@@ -166,7 +167,7 @@ def delete_product():
     if not product_id:
         return "Please select a product", 404
     
-    db.execute('DELETE FROM products WHERE id = ?', (product_id))
+    db.execute('DELETE FROM products WHERE id = ?', (product_id,))
     db.commit()
 
     return redirect('/products')
