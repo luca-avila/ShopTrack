@@ -15,3 +15,5 @@ Basic Reports: View total sales, most sold products, and products with low stock
 Simple Interface: Minimalist design with Bootstrap for ease of use.
 
 Database: Uses SQLite for easy local data management.
+
+WATCH IT ON YOUTUBE https://www.youtube.com/watch?v=xoBE84XcwE4&ab_channel=Luca
